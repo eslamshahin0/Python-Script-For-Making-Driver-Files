@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 def MakeDriverFiles():
   names =[ '_interface.h','_config.h','_private.h','_program.c']
@@ -8,39 +9,58 @@ def MakeDriverFiles():
   os.mkdir(DriverName)
   #Enter dir 
   os.chdir(DriverName)
-
-
+  
+  #get date 
+  today = date.today()
+  d1 = today.strftime("%d/%m/%Y")
+  
 #Store the contents of the file that has your headers comments
-  f0=open('../HeaderComments.txt','r')
-  contents=f0.read()		
+  f0=open('../HeaderCommentsSourse.txt','r')
+  contents=f0.readlines()
+  contents[21] = '#include \"STD_TYPES.h\"\n'  
+  contents[22] = '#include "BIT_MATH.h"\n' 
+  for i in range (3):
+      contents[25+i]='#include "'+DriverName+names[i]+"\"\n"
+      
   #print(contents)
   f0.close()
-  
+  f1=open('../HeaderComments.txt','r')
+  hcontents=f1.readlines()
+  f1.close()
     #Start making .h files
   for i in range(4):
       f=open(DriverName+names[i],'w')
-      f.write(contents+'\n')	#insert header commentes
-      f.write("#ifndef "+DriverName+header[i]+'\n')	#write header guards
-      f.write('#define '+DriverName+header[i]+'\n')
-      f.write('\n'*10+'#endif ')		#leave some space
+     	#insert header commentes
+      hcontents[17]="#ifndef "+DriverName+header[i]+'\n'	#write header guards
+      hcontents[18]='#define '+DriverName+header[i]+'\n'
+      f.writelines(hcontents)
       f.close()
+      f1=open(DriverName+names[i],'r')
+      data =f1.read()
+      f1.close()
+      f1=open(DriverName+names[i],'w')
+      data = data.replace('[File Name]' , DriverName+names[i])
+      data = data.replace('[Date]' , d1)
+      f1.write(data)
+      #close file 
+      f1.close()
   
   #Make .c file
   f=open(DriverName+names[3],'w')
-  f.write(contents+'\n')	#insert header commentes
+  f.writelines(contents)	#insert header commentes
   #open xxxx_program.c to include librares and other files
   f=open(DriverName+'_program.c','r+')
-  f.write(contents+'\n')	#insert header commentes
-  #write libraries
-  f.write('#include "STD_TYPES.h"')
-  f.write('\n')
-  f.write('#include "BIT_MATH.h"')
-  f.write('\n')
-  for i in range (3):
-      f.write('#include "'+DriverName+names[i]+"\"")
-      f.write('\n')
-  #close file 
+  f.writelines(contents)	#insert header commentes
   f.close()
+  f1=open(DriverName+names[3],'r')
+  data =f1.read()
+  f1.close()
+  f1=open(DriverName+names[3],'w')
+  data = data.replace('[File Name]' , DriverName+names[3])
+  data = data.replace('[Date]' , d1)
+  f1.write(data)
+  #close file 
+  f1.close()
   print('Done ... \n')
 
 
